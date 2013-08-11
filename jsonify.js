@@ -43,7 +43,7 @@
 function jsonify(value, loose) {
     if (typeof value === 'string') {
         try {
-            var s = value.replace(/'/g, '"').replace(/(\w+)\s*:/g, '"$1":');
+            var s = value.replace(/'/g, '"').replace(/([A-Za-z_$][\w$]*)\s*:/g, '"$1":');
             value = JSON.parse(s);
         } catch (e) {}
     }

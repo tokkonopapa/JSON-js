@@ -1,5 +1,5 @@
 /*
-    json2.js
+    jsonify.js
     2013-08-11
 
     Public Domain.
@@ -40,20 +40,12 @@
 
 /*jslint evil: true, regexp: true */
 
-(function () {
-    'use strict';
-
-    // If the JSON object does not yet have a jsonify method, give it one.
-
-    if (typeof JSON.jsonify !== 'function') {
-        JSON.jsonify = function (value) {
-            if (typeof value === 'string') {
-                try {
-                    var s = value.replace(/'/g, '"').replace(/(\w+)\s*:/g, '"$1":');
-                    value = JSON.parse(s);
-                } catch (e) {}
-            }
-            return value;
-        }
+function jsonify(value) {
+    if (typeof value === 'string') {
+        try {
+            var s = value.replace(/'/g, '"').replace(/(\w+)\s*:/g, '"$1":');
+            value = JSON.parse(s);
+        } catch (e) {}
     }
-}());
+    return value;
+};

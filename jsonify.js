@@ -18,21 +18,21 @@
 
     This file creates a global JSON object containing one method: jsonify.
 
-        JSON.jsonify(value)
+        jsonify(value)
             value       string that will be converted to JavaScript value.
 
-            This method produces a JavaScript value from string that indicate
-            JavaScript object literals.
+            This method produces a JSON string from a valid JSON like string
+            that contain JavaScript object literals.
 
             Typical usage of this method is ...
 
             Example:
 
-            obj = JSON.jsonify("{who:['John',{age:10}]}");
+            obj = jsonify("{who:['John',{age:10}]}");
             // obj is '{"who":["John",{"age":10}]}' which is JavaScript object.
 
-            obj = JSON.jsonify("{hack:alert(arguments.callee)}");
-            // obj is just same as input string.
+            obj = jsonify("{hack:alert(arguments.callee)}");
+            // obj is '{}'.
 
     This is a reference implementation. You are free to copy, modify, or
     redistribute.
@@ -40,12 +40,15 @@
 
 /*jslint evil: true, regexp: true */
 
-function jsonify(value) {
+function jsonify(value, loose) {
     if (typeof value === 'string') {
         try {
             var s = value.replace(/'/g, '"').replace(/(\w+)\s*:/g, '"$1":');
             value = JSON.parse(s);
         } catch (e) {}
     }
-    return value;
+    if (!loose) {
+        value = typeof value === 'object' ? value : {};
+    }
+    return JSON.stringify(value);
 }

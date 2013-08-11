@@ -48,4 +48,4 @@ function jsonify(value) {
         } catch (e) {}
     }
     return value;
-};
+}

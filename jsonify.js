@@ -24,14 +24,18 @@
             This method produces a JSON string from a valid JSON like string
             that contain JavaScript object literals.
 
-            Typical usage of this method is ...
+            Typical usage of this method is retrieving parameters from HTML5
+            data attribute.
 
             Example:
 
             obj = jsonify("{who:['John',{age:10}]}");
-            // obj is '{"who":["John",{"age":10}]}' which is JavaScript object.
+            // obj is '{"who":["John",{"age":10}]}'
 
-            obj = jsonify("{hack:alert(arguments.callee)}");
+            obj = jsonify("who:John,age:10");
+            // obj is '{"who":"John","age":10}'
+
+            obj = jsonify("{hack:alert('hello')}");
             // obj is '{}'.
 
     This is a reference implementation. You are free to copy, modify, or
@@ -42,13 +46,24 @@
 
 function jsonify(value, loose) {
     if (typeof value === 'string') {
+        var s = $.trim(value);
+        if (/^[\[{]/.test(s) === false) {
+            s = '{' + s + '}';
+        }
         try {
-            var s = value.replace(/'/g, '"').replace(/([A-Za-z_$][\w$]*)\s*:/g, '"$1":');
-            value = JSON.parse(s);
+            value = JSON.parse(
+                s.replace(/'/g, '"')
+                 .replace(/([A-Za-z_$][\w$]*)\s*:/g, '"$1":')
+                 .replace(/:\s*([A-Za-z_$][\w$]*)/g, ':"$1"')
+            );
         } catch (e) {}
     }
-    if (!loose) {
-        value = typeof value === 'object' ? value : {};
+
+    // if loose is off and value is not object, return empty.
+    if (!loose && value === 'string') {
+        value = {};
     }
+
+    // object or undefined
     return JSON.stringify(value);
 }

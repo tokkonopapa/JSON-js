@@ -45,8 +45,6 @@
 /*jslint evil: true, regexp: true */
 
 function jsonify(value, loose) {
-
-function jsonify(value) {
     if (typeof value === 'string') {
         var s = $.trim(value);
         if (/^[{\[]/.test(s) === false) {

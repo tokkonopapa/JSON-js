@@ -46,19 +46,19 @@
 
 function jsonify(value, loose) {
     if (typeof value === 'string') {
-        var s = $.trim(value);
-        if (/^[{\[]/.test(s) === false) {
-            s = '{' + s + '}';
+        var str = $.trim(value);
+        if (/^[{\[]/.test(str) === false) {
+            str = '{' + str + '}';
         }
         try {
-            value = JSON.parse(
-                s.replace(/'/g, '"')
-                 .replace(/([^",{}\[\]\s]+)\s*:/g, '"$1":')
-                 .replace(/:\s*([^",{}\[\]\s]+)/g, function(a, b) {
-                     return 'true' === b || 'false' === b || 'null' === b ||
-                         (!isNaN(parseFloat(b)) && isFinite(b)) ?
-                         a : ':"' + b + '"';
-                 })
+            value = JSON.parse(str
+                .replace(/'/g, '"')
+                .replace(/([^",{}\[\]\s]+)\s*:/g, '"$1":')
+                .replace(/:\s*([^",{}\[\]\s]+)/g, function (a, b) {
+                    return 'true' === b || 'false' === b || 'null' === b ||
+                        (!isNaN(parseFloat(b)) && isFinite(b)) ?
+                        a : ':"' + b + '"';
+                })
             );
         } catch (e) {}
     }

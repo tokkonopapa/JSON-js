@@ -54,11 +54,10 @@ function jsonify(value, loose) {
             value = JSON.parse(
                 s.replace(/'/g, '"')
                  .replace(/([^",{}\[\]\s]+)\s*:/g, '"$1":')
-                 .replace(/:\s*([^",{}\[\]\s]+)/g, function(a) {
-                     a = a.replace(/:\s*/, '');
-                     return 'true' === a || 'false' === a || 'null' === a ||
-                         (!isNaN(parseFloat(a)) && isFinite(a)) ?
-                         ':' + a : ':"' + a + '"';
+                 .replace(/:\s*([^",{}\[\]\s]+)/g, function(a, b) {
+                     return 'true' === b || 'false' === b || 'null' === b ||
+                         (!isNaN(parseFloat(b)) && isFinite(b)) ?
+                         a : ':"' + b + '"';
                  })
             );
         } catch (e) {}

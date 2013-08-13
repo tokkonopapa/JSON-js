@@ -45,21 +45,24 @@
 /*jslint evil: true, regexp: true */
 
 function jsonify(value, loose) {
+
+function jsonify(value) {
     if (typeof value === 'string') {
         var s = $.trim(value);
-        if (/^[\[{]/.test(s) === false) {
+        if (/^[{\[]/.test(s) === false) {
             s = '{' + s + '}';
         }
         try {
             value = JSON.parse(
                 s.replace(/'/g, '"')
-                 .replace(/([A-Za-z_$][\w$]*)\s*:/g, '"$1":')
-                 .replace(/:\s*([A-Za-z_$][\w$]*)/g, ':"$1"')
+                 .replace(/([^",{}\[\]\d\s][^",}\]\s]*)\s*:/g, '"$1":')
+                 .replace(/:\s*([^",{}\[\]\d\s][^",}\]\s]*)/g, ':"$1"')
+                 .replace(/"(true|false|null)"/g, '$1')
             );
         } catch (e) {}
     }
 
-    // if loose is off and value is not object, return empty.
+    // if loose is undefined and value is string, return empty object.
     if (!loose && value === 'string') {
         value = {};
     }

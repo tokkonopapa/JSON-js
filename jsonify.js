@@ -53,9 +53,13 @@ function jsonify(value, loose) {
         try {
             value = JSON.parse(
                 s.replace(/'/g, '"')
-                 .replace(/([^",{}\[\]\d\s][^",}\]\s]*)\s*:/g, '"$1":')
-                 .replace(/:\s*([^",{}\[\]\d\s][^",}\]\s]*)/g, ':"$1"')
-                 .replace(/"(true|false|null)"/g, '$1')
+                 .replace(/([^",{}\[\]\s]+)\s*:/g, '"$1":')
+                 .replace(/:\s*([^",{}\[\]\s]+)/g, function(a) {
+                     a = a.replace(/:\s*/, '');
+                     return 'true' === a || 'false' === a || 'null' === a ||
+                         (!isNaN(parseFloat(a)) && isFinite(a)) ?
+                         ':' + a : ':"' + a + '"';
+                 })
             );
         } catch (e) {}
     }

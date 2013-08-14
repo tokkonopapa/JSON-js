@@ -30,13 +30,13 @@
             Example:
 
             obj = jsonify("{who:['John',{age:10}]}");
-            // obj is '{"who":["John",{"age":10}]}'
+            // obj is `{"who":["John",{"age":10}]}`
 
             obj = jsonify("who:John,age:10");
-            // obj is '{"who":"John","age":10}'
+            // obj is `{"who":"John","age":10}`
 
-            obj = jsonify("{hack:alert('hello')}");
-            // obj is '{}'.
+            obj = jsonify('{hack:alert("hello")}');
+            // obj is `{"hack":"alert(\"hello\")"}`
 
     This is a reference implementation. You are free to copy, modify, or
     redistribute.
@@ -44,27 +44,35 @@
 
 /*jslint evil: true, regexp: true */
 
-function jsonify(value, loose) {
-    if (typeof value === 'string') {
-        var str = $.trim(value);
-        if (/^[{\[]/.test(str) === false) {
+var _jsonify_obj = /^[{\[]/,
+    _jsonify_tok = /[^,:{}\[\]]+/g,
+    _jsonify_elm = /^['"](.*)['"]$/,
+    _jsonify_qot = /"/g;
+
+function jsonify(data) {
+    if (typeof data === 'string') {
+        var str = $.trim(data);
+        if (_jsonify_obj.test(str) === false) {
             str = '{' + str + '}';
         }
+        str = str.replace(_jsonify_tok, function (a) {
+            a = $.trim(a);
+            return '' === a ||
+                'true' === a || 'false' === a || 'null' === a ||
+                (!isNaN(parseFloat(a)) && isFinite(a)) ?
+                a : '"' + a.replace(_jsonify_elm, '$1')
+                           .replace(_jsonify_qot, '\\"') + '"';
+        });
         try {
-            value = JSON.parse(
-                str.replace(/[^,:{}\[\]]+/g, function (a) {
-                    a = $.trim(a);
-                    return '' === a || 'true' === a || 'false' === a || 'null' === a || (!isNaN(parseFloat(a)) && isFinite(a)) ? a : '"' + a.replace(/^['"](.*)['"]$/, '$1').replace(/"/g, '\\"') + '"';
-                })
-            );
+            data = JSON.parse(str);
         } catch (e) { /* alert(e); */ }
     }
 
-    // if loose is undefined and value is string, return empty object.
-    if (!loose && value === 'string') {
-        value = {};
+    // if loose is undefined and data is string, return empty object.
+    if (!loose && data === 'string') {
+        data = {};
     }
 
     // object or undefined
-    return JSON.stringify(value);
+    return JSON.stringify(data);
 }

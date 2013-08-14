@@ -51,16 +51,13 @@ function jsonify(value, loose) {
             str = '{' + str + '}';
         }
         try {
-            value = JSON.parse(str
-                .replace(/'/g, '"')
-                .replace(/([^",{}\[\]\s]+)\s*:/g, '"$1":')
-                .replace(/:\s*([^",{}\[\]\s]+)/g, function (a, b) {
-                    return 'true' === b || 'false' === b || 'null' === b ||
-                        (!isNaN(parseFloat(b)) && isFinite(b)) ?
-                        a : ':"' + b + '"';
+            value = JSON.parse(
+                str.replace(/[^,:{}\[\]]+/g, function (a) {
+                    a = $.trim(a);
+                    return '' === a || 'true' === a || 'false' === a || 'null' === a || (!isNaN(parseFloat(a)) && isFinite(a)) ? a : '"' + a.replace(/^['"](.*)['"]$/, '$1').replace(/"/g, '\\"') + '"';
                 })
             );
-        } catch (e) {}
+        } catch (e) { /* alert(e); */ }
     }
 
     // if loose is undefined and value is string, return empty object.

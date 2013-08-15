@@ -44,24 +44,24 @@
 
 /*jslint evil: true, regexp: true */
 
-var _jsonify_obj = /^[{\[]/,
-    _jsonify_tok = /[^,:{}\[\]]+/g,
-    _jsonify_elm = /^['"](.*)['"]$/,
-    _jsonify_qot = /"/g;
+var _jsonify_brace = /^[{\[]/,
+    _jsonify_token = /[^,:{}\[\]]+/g,
+    _jsonify_quote = /^['"](.*)['"]$/,
+    _jsonify_escap = /"/g;
 
 function jsonify(data) {
     if (typeof data === 'string') {
         var str = $.trim(data);
-        if (_jsonify_obj.test(str) === false) {
+        if (_jsonify_brace.test(str) === false) {
             str = '{' + str + '}';
         }
-        str = str.replace(_jsonify_tok, function (a) {
+        str = str.replace(_jsonify_token, function (a) {
             a = $.trim(a);
             return '' === a ||
                 'true' === a || 'false' === a || 'null' === a ||
                 (!isNaN(parseFloat(a)) && isFinite(a)) ?
-                a : '"' + a.replace(_jsonify_elm, '$1')
-                           .replace(_jsonify_qot, '\\"') + '"';
+                a : '"' + a.replace(_jsonify_quote, '$1')
+                           .replace(_jsonify_escap, '\\"') + '"';
         });
         try {
             data = JSON.parse(str);

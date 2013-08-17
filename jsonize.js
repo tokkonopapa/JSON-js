@@ -1,5 +1,5 @@
 /*
-    jsonify.js
+    jsonize.js
     2013-08-11
 
     Public Domain.
@@ -16,9 +16,9 @@
     NOT CONTROL.
 
 
-    This file creates a global JSON object containing one method: jsonify.
+    This file creates a global JSON object containing one method: jsonize.
 
-        jsonify(value)
+        jsonize(value)
             value       string that will be converted to JavaScript value.
 
             This method produces a JSON string from a valid JSON like string
@@ -29,13 +29,13 @@
 
             Example:
 
-            obj = jsonify("{who:['John',{age:10}]}");
+            obj = jsonize("{who:['John',{age:10}]}");
             // obj is `{"who":["John",{"age":10}]}`
 
-            obj = jsonify("who:John,age:10");
+            obj = jsonize("who:John,age:10");
             // obj is `{"who":"John","age":10}`
 
-            obj = jsonify('{hack:alert("hello")}');
+            obj = jsonize('{hack:alert("hello")}');
             // obj is `{"hack":"alert(\"hello\")"}`
 
     This is a reference implementation. You are free to copy, modify, or
@@ -44,24 +44,24 @@
 
 /*jslint evil: true, regexp: true */
 
-var _jsonify_brace = /^[{\[]/,
-    _jsonify_token = /[^,:{}\[\]]+/g,
-    _jsonify_quote = /^['"](.*)['"]$/,
-    _jsonify_escap = /"/g;
+var _jsonize_brace = /^[{\[]/,
+    _jsonize_token = /[^,:{}\[\]]+/g,
+    _jsonize_quote = /^['"](.*)['"]$/,
+    _jsonize_escap = /"/g;
 
-function jsonify(data) {
+function jsonize(data) {
     if (typeof data === 'string') {
         var str = $.trim(data);
-        if (_jsonify_brace.test(str) === false) {
+        if (_jsonize_brace.test(str) === false) {
             str = '{' + str + '}';
         }
-        str = str.replace(_jsonify_token, function (a) {
+        str = str.replace(_jsonize_token, function (a) {
             a = $.trim(a);
             return '' === a ||
                 'true' === a || 'false' === a || 'null' === a ||
                 (!isNaN(parseFloat(a)) && isFinite(a)) ?
-                a : '"' + a.replace(_jsonify_quote, '$1')
-                           .replace(_jsonify_escap, '\\"') + '"';
+                a : '"' + a.replace(_jsonize_quote, '$1')
+                           .replace(_jsonize_escap, '\\"') + '"';
         });
         try {
             data = JSON.parse(str);
